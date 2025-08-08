@@ -30,7 +30,7 @@ function App() {
   return (
 
         <Routes>
-          <Route path="/" element={<DashboardPage user={user} />} />
+          <Route path="/" element={<DashboardPage user={user} onLogout={handleLogout} />} />
           <Route path="/dashboard" element={<DashboardPage user={user} />} />
           <Route path="/matieres" element={<MatierePage />} />
           <Route path="/salles" element={<SallePage />} />
