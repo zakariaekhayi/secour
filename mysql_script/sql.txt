@@ -1,0 +1,99 @@
+-- Script SQL complet pour la base de données emploi du temps
+CREATE DATABASE IF NOT EXISTS emp_php2;
+USE emp_php2;
+
+-- Supprimer les tables si elles existent (ordre inverse des dépendances)
+DROP TABLE IF EXISTS seance;
+DROP TABLE IF EXISTS matiere;
+DROP TABLE IF EXISTS salle;
+DROP TABLE IF EXISTS classe;
+
+CREATE TABLE user (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('ADMIN', 'PROFESSEUR', 'USER') NOT NULL,
+    nom_complet VARCHAR(100)
+);
+
+
+-- Table classe : nom (PK), niveau, filiere
+CREATE TABLE classe (
+    nom VARCHAR(50) PRIMARY KEY,
+    niveau VARCHAR(50),
+    filiere VARCHAR(50)
+);
+
+-- Table salle : nom (PK), batiment, type (salle, amphi, atelier)
+CREATE TABLE salle (
+    nom VARCHAR(50) PRIMARY KEY,
+    batiment VARCHAR(50),
+    type ENUM('salle', 'amphi', 'atelier')
+);
+
+-- Table matiere : id (PK), nom_cour, nom_prof, type_cour, classe_id (FK -> classe.nom)
+CREATE TABLE matiere (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom_cour VARCHAR(100),
+    nom_prof VARCHAR(100),
+    type_cour VARCHAR(50),
+    classe_id VARCHAR(50),
+    FOREIGN KEY (classe_id) REFERENCES classe(nom) ON DELETE CASCADE
+);
+
+-- Table seance : id (PK), nom_classe (FK), id_matiere (FK), nom_prof, nom_salle (FK), heure_debut, heure_fin, jour
+CREATE TABLE seance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom_classe VARCHAR(50),
+    id_matiere INT,
+    nom_prof VARCHAR(100),
+    nom_salle VARCHAR(50),
+    heure_debut TIME,
+    heure_fin TIME,
+    groupe VARCHAR(10) DEFAULT NULL,
+    jour ENUM('Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'),
+    FOREIGN KEY (nom_classe) REFERENCES classe(nom) ON DELETE CASCADE,
+    FOREIGN KEY (id_matiere) REFERENCES matiere(id) ON DELETE CASCADE,
+    FOREIGN KEY (nom_salle) REFERENCES salle(nom) ON DELETE CASCADE
+);
+
+-- Trigger pour éviter les conflits de séances
+DELIMITER $$
+CREATE TRIGGER check_conflit_seance
+BEFORE INSERT ON seance
+FOR EACH ROW
+BEGIN
+    -- Vérifier conflit de salle
+    IF EXISTS (
+        SELECT 1 FROM seance 
+        WHERE NEW.jour = jour
+        AND NEW.nom_salle = nom_salle
+        AND (NEW.heure_debut < heure_fin AND NEW.heure_fin > heure_debut)
+    ) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Conflit : salle occupée dans ce créneau';
+    END IF;
+    
+    -- Vérifier conflit de professeur
+    IF EXISTS (
+        SELECT 1 FROM seance 
+        WHERE NEW.jour = jour
+        AND NEW.nom_prof = nom_prof
+        AND (NEW.heure_debut < heure_fin AND NEW.heure_fin > heure_debut)
+    ) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Conflit : professeur occupé dans ce créneau';
+    END IF;
+    
+    -- Vérifier conflit de classe
+    IF EXISTS (
+        SELECT 1 FROM seance 
+        WHERE NEW.jour = jour
+        AND NEW.nom_classe = nom_classe
+        AND (NEW.heure_debut < heure_fin AND NEW.heure_fin > heure_debut)
+    ) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Conflit : classe occupée dans ce créneau';
+    END IF;
+END$$
+DELIMITER ;
