@@ -1,6 +1,7 @@
 // src/pages/EmploisPage.jsx
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import '../styles/EmploisPage.css';
 
 const EmploisPage = () => {
     const [seances, setSeances] = useState([]);
@@ -82,19 +83,20 @@ const EmploisPage = () => {
             type_cour: matiere.typeCour || 'N/A'
         };
     };
+
     const normalizeHeure = (heure) => {
         return heure ? heure.substring(0, 8) : '';
     };
 
     const getCouleurTypeCour = (typeCour) => {
         console.log('Type de cours reçu :', typeCour); // ✅ Log pour débugger
-        if (!typeCour) return { backgroundColor: '#F5F5F5', borderLeft: '4px solid #999' };
+        if (!typeCour) return 'default-bg';
         const type = typeCour.toLowerCase().trim();
         switch (type) {
-            case 'cours': return { backgroundColor: '#E3F2FD', borderLeft: '4px solid #2196F3' };
-            case 'td':    return { backgroundColor: '#FFF3E0', borderLeft: '4px solid #FF9800' };
-            case 'tp':    return { backgroundColor: '#E8F5E8', borderLeft: '4px solid #4CAF50' };
-            default:      return { backgroundColor: '#F5F5F5', borderLeft: '4px solid #999' };
+            case 'cours': return 'cours-bg';
+            case 'td':    return 'td-bg';
+            case 'tp':    return 'tp-bg';
+            default:      return 'default-bg';
         }
     };
 
@@ -117,110 +119,83 @@ const EmploisPage = () => {
         const creneauxLabels = ['8h30 → 10h30', '10h45 → 12h45', '14h → 16h', '16h15 → 18h15'];
 
         return (
-            <div style={{ marginTop: '30px' }}>
-                <h3>📅 Emploi du temps de la classe {selectedClasse}</h3>
-                <table style={{
-                    width: '100%',
-                    border: '1px solid black',
-                    borderCollapse: 'collapse',
-                    margin: '20px 0'
-                }}>
+            <div className="emploi-container">
+                <h3 className="emploi-title">
+                    📅 Emploi du temps de la classe {selectedClasse}
+                </h3>
+                <table className="emploi-table">
                     <thead>
-                    <tr style={{ backgroundColor: '#4CAF50', color: 'white' }}>
-                        <th style={{ padding: '10px', width: '15%', border: '1px solid black' }}>Jour</th>
-                        {creneauxLabels.map((label, index) => (
-                            <th key={index} style={{ padding: '10px', width: '21.25%', border: '1px solid black' }}>
-                                {label}
-                            </th>
-                        ))}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {jours.map(jour => (
-                        <tr key={jour}>
-                            <td style={{
-                                padding: '10px',
-                                backgroundColor: '#2196F3',
-                                color: 'white',
-                                fontWeight: 'bold',
-                                textAlign: 'center',
-                                border: '1px solid black'
-                            }}>
-                                {jour}
-                            </td>
-                            {creneaux.map(creneau => (
-                                <td key={creneau} style={{
-                                    padding: '5px',
-                                    textAlign: 'center',
-                                    verticalAlign: 'middle',
-                                    border: '1px solid black',
-                                    minHeight: '80px'
-                                }}>
-                                    {emploi[jour]?.[creneau] ? (
-                                        (() => {
-                                            const seancesCreneau = emploi[jour][creneau];
-                                            const matieresGroupees = {};
-                                            seancesCreneau.forEach(seance => {
-                                                const matiereInfo = getMatiereInfo(seance.idMatiere);
-                                                const key = `${matiereInfo.nom_cour}_${matiereInfo.type_cour}`;
-                                                if (!matieresGroupees[key]) matieresGroupees[key] = [];
-                                                matieresGroupees[key].push({ ...seance, matiereInfo });
-                                            });
-
-                                            return Object.values(matieresGroupees).map((group, idx) => {
-                                                const first = group[0];
-                                                const style = getCouleurTypeCour(first.matiereInfo.type_cour);
-                                                return (
-                                                    <div key={idx} style={{
-                                                        ...style,
-                                                        padding: '8px',
-                                                        borderRadius: '5px',
-                                                        margin: '2px',
-                                                        fontSize: '12px'
-                                                    }}>
-                                                        <div style={{ fontWeight: 'bold', color: '#333', marginBottom: '4px' }}>
-                                                            {first.matiereInfo.nom_cour}
-                                                        </div>
-                                                        <div style={{ color: '#666', fontStyle: 'italic', marginBottom: '4px' }}>
-                                                            {first.matiereInfo.type_cour}
-                                                        </div>
-                                                        {group.length > 1 ? (
-                                                            group.map((s, i) => (
-                                                                <div key={i} style={{
-                                                                    margin: '2px 0',
-                                                                    padding: '2px',
-                                                                    backgroundColor: 'rgba(255,255,255,0.7)',
-                                                                    borderRadius: '3px'
-                                                                }}>
-                                                                    <div style={{ fontWeight: 'bold', color: '#1976D2', fontSize: '10px' }}>
-                                                                        {s.groupe || 'G'}
-                                                                    </div>
-                                                                    <div style={{ fontSize: '10px' }}>👨‍🏫 {s.nomProf}</div>
-                                                                    <div style={{ fontSize: '10px' }}>🏫 {s.nomSalle}</div>
-                                                                </div>
-                                                            ))
-                                                        ) : (
-                                                            <>
-                                                                <div style={{ fontSize: '11px', marginBottom: '2px' }}>👨‍🏫 {first.nomProf}</div>
-                                                                <div style={{ fontSize: '11px', marginBottom: '2px' }}>🏫 {first.nomSalle}</div>
-                                                                {first.groupe && (
-                                                                    <div style={{ fontWeight: 'bold', color: '#1976D2', fontSize: '10px' }}>
-                                                                        {first.groupe}
-                                                                    </div>
-                                                                )}
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                );
-                                            });
-                                        })()
-                                    ) : (
-                                        <span style={{ color: '#888' }}>-</span>
-                                    )}
-                                </td>
+                        <tr>
+                            <th style={{ width: '15%' }}>Jour</th>
+                            {creneauxLabels.map((label, index) => (
+                                <th key={index} style={{ width: '21.25%' }}>
+                                    {label}
+                                </th>
                             ))}
                         </tr>
-                    ))}
+                    </thead>
+                    <tbody>
+                        {jours.map(jour => (
+                            <tr key={jour}>
+                                <td className="jour-cell">
+                                    {jour}
+                                </td>
+                                {creneaux.map(creneau => (
+                                    <td key={creneau}>
+                                        {emploi[jour]?.[creneau] ? (
+                                            (() => {
+                                                const seancesCreneau = emploi[jour][creneau];
+                                                const matieresGroupees = {};
+                                                seancesCreneau.forEach(seance => {
+                                                    const matiereInfo = getMatiereInfo(seance.idMatiere);
+                                                    const key = `${matiereInfo.nom_cour}_${matiereInfo.type_cour}`;
+                                                    if (!matieresGroupees[key]) matieresGroupees[key] = [];
+                                                    matieresGroupees[key].push({ ...seance, matiereInfo });
+                                                });
+
+                                                return Object.values(matieresGroupees).map((group, idx) => {
+                                                    const first = group[0];
+                                                    const cssClass = getCouleurTypeCour(first.matiereInfo.type_cour);
+                                                    return (
+                                                        <div key={idx} className={`seance-item ${cssClass}`}>
+                                                            <div className="seance-title">
+                                                                {first.matiereInfo.nom_cour}
+                                                            </div>
+                                                            <div className="seance-type">
+                                                                {first.matiereInfo.type_cour}
+                                                            </div>
+                                                            {group.length > 1 ? (
+                                                                group.map((s, i) => (
+                                                                    <div key={i} className="groupe-item">
+                                                                        <div className="seance-groupe">
+                                                                            {s.groupe || 'G'}
+                                                                        </div>
+                                                                        <div className="seance-info">👨‍🏫 {s.nomProf}</div>
+                                                                        <div className="seance-info">🏫 {s.nomSalle}</div>
+                                                                    </div>
+                                                                ))
+                                                            ) : (
+                                                                <>
+                                                                    <div className="seance-info">👨‍🏫 {first.nomProf}</div>
+                                                                    <div className="seance-info">🏫 {first.nomSalle}</div>
+                                                                    {first.groupe && (
+                                                                        <div className="seance-groupe">
+                                                                            {first.groupe}
+                                                                        </div>
+                                                                    )}
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                });
+                                            })()
+                                        ) : (
+                                            <span className="empty-cell">-</span>
+                                        )}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
@@ -228,24 +203,34 @@ const EmploisPage = () => {
     };
 
     if (loading) {
-        return <div style={{ padding: '20px' }}>Chargement...</div>;
+        return (
+            <div className="emplois-page-container">
+                <div className="loading-container">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <span className="loading-text">Chargement...</span>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div style={{ padding: '20px' }}>
-            <div style={{
-                marginBottom: '20px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-            }}>
-                <h2>📅 Gestion des Emplois du Temps</h2>
-                <div>
-                    <label style={{ marginRight: '10px' }}>Classe :</label>
-                    <select value={selectedClasse} onChange={handleClasseChange} style={{ padding: '5px', marginRight: '10px' }}>
+        <div className="emplois-page-container">
+            <div className="page-header d-flex justify-content-between align-items-center">
+                <h2 className="page-title">📅 Gestion des Emplois du Temps</h2>
+                <div className="filter-container">
+                    <label className="filter-label">Classe :</label>
+                    <select
+                        className="filter-select"
+                        value={selectedClasse}
+                        onChange={handleClasseChange}
+                    >
                         <option value="">Toutes les classes</option>
                         {classes.map(classe => (
-                            <option key={classe.nom} value={classe.nom}>{classe.nom}</option>
+                            <option key={classe.nom} value={classe.nom}>
+                                {classe.nom}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -253,47 +238,55 @@ const EmploisPage = () => {
 
             {renderEmploiDuTemps()}
 
-            <div style={{ marginTop: '30px' }}>
-                <h3>{showAllSeances ? 'Toutes les séances' : `Séances de ${selectedClasse}`}</h3>
-                <table style={{ width: '100%', border: '1px solid black', borderCollapse: 'collapse' }}>
-                    <thead>
-                    <tr style={{ borderBottom: '1px solid black' }}>
-                        <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>ID</th>
-                        <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Classe</th>
-                        <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Matière</th>
-                        <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Type</th>
-                        <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Prof</th>
-                        <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Salle</th>
-                        <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Début</th>
-                        <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Fin</th>
-                        <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Jour</th>
-                        <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Groupe</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {(showAllSeances ? seances : seances.filter(s => s.nomClasse === selectedClasse))
-                        .map(seance => {
-                            const matiere = getMatiereInfo(seance.idMatiere);
-                            return (
-                                <tr key={seance.id}>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>{seance.id}</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>{seance.nomClasse}</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>{matiere.nom_cour}</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>{matiere.type_cour}</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>{seance.nomProf}</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>{seance.nomSalle}</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>{normalizeHeure(seance.heureDebut)}</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>{normalizeHeure(seance.heureFin)}</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>{seance.jour}</td>
-                                    <td style={{ border: '1px solid black', padding: '10px' }}>{seance.groupe || '-'}</td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
+            <div className="seances-section">
+                <h3 className="seances-title">
+                    {showAllSeances ? 'Toutes les séances' : `Séances de ${selectedClasse}`}
+                </h3>
+
+                <div className="table-container">
+                    <table className="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Classe</th>
+                                <th>Matière</th>
+                                <th>Type</th>
+                                <th>Prof</th>
+                                <th>Salle</th>
+                                <th>Début</th>
+                                <th>Fin</th>
+                                <th>Jour</th>
+                                <th>Groupe</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {(showAllSeances ? seances : seances.filter(s => s.nomClasse === selectedClasse))
+                                .map(seance => {
+                                    const matiere = getMatiereInfo(seance.idMatiere);
+                                    return (
+                                        <tr key={seance.id}>
+                                            <td>{seance.id}</td>
+                                            <td>{seance.nomClasse}</td>
+                                            <td>{matiere.nom_cour}</td>
+                                            <td>{matiere.type_cour}</td>
+                                            <td>{seance.nomProf}</td>
+                                            <td>{seance.nomSalle}</td>
+                                            <td>{normalizeHeure(seance.heureDebut)}</td>
+                                            <td>{normalizeHeure(seance.heureFin)}</td>
+                                            <td>{seance.jour}</td>
+                                            <td>{seance.groupe || '-'}</td>
+                                        </tr>
+                                    );
+                                })}
+                        </tbody>
+                    </table>
+                </div>
 
                 {seances.length === 0 && (
-                    <p style={{ marginTop: '20px', color: '#888' }}>Aucune séance trouvée.</p>
+                    <div className="empty-message">
+                        <i className="fas fa-calendar-times fa-3x mb-3"></i>
+                        <p>Aucune séance trouvée.</p>
+                    </div>
                 )}
             </div>
         </div>

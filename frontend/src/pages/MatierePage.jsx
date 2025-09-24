@@ -1,6 +1,7 @@
-// src/pages/MatierePage.jsx
+//src/pages/MatierePage.jsx
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import '../styles/MatierePage.css';
 
 const MatierePage = () => {
     const [matieres, setMatieres] = useState([]);
@@ -101,56 +102,70 @@ const MatierePage = () => {
     };
 
     if (loading) {
-        return <div>Chargement...</div>;
+        return (
+            <div className="matiere-page-container">
+                <div className="loading-container">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <span className="loading-text">Chargement...</span>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div style={{ padding: '20px' }}>
-            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between' }}>
-                <h2>Gestion des Matières</h2>
-                <button onClick={handleAdd}>Ajouter une matière</button>
+        <div className="matiere-page-container">
+            <div className="page-header d-flex justify-content-between align-items-center">
+                <h2 className="page-title">Gestion des Matières</h2>
+                <button className="btn btn-add-matiere" onClick={handleAdd}>
+                    <i className="fas fa-plus me-2"></i>
+                    Ajouter une matière
+                </button>
             </div>
 
             {showForm && (
-                <div style={{ marginBottom: '20px', border: '1px solid black', padding: '20px' }}>
-                    <h3>{editMode ? 'Modifier la matière' : 'Ajouter une matière'}</h3>
+                <div className="form-container">
+                    <h3 className="form-title">
+                        {editMode ? 'Modifier la matière' : 'Ajouter une matière'}
+                    </h3>
                     <form onSubmit={handleSubmit}>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Nom du cours:</label>
+                        <div className="form-group">
+                            <label className="form-label">Nom du cours:</label>
                             <input
                                 type="text"
+                                className="form-control"
                                 value={currentMatiere.nomCour}
                                 onChange={(e) => setCurrentMatiere({...currentMatiere, nomCour: e.target.value})}
-                                style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                                 required
                             />
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Nom du professeur:</label>
+                        <div className="form-group">
+                            <label className="form-label">Nom du professeur:</label>
                             <input
                                 type="text"
+                                className="form-control"
                                 value={currentMatiere.nomProf}
                                 onChange={(e) => setCurrentMatiere({...currentMatiere, nomProf: e.target.value})}
-                                style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                                 required
                             />
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Type de cours:</label>
+                        <div className="form-group">
+                            <label className="form-label">Type de cours:</label>
                             <input
                                 type="text"
+                                className="form-control"
                                 value={currentMatiere.typeCour}
                                 onChange={(e) => setCurrentMatiere({...currentMatiere, typeCour: e.target.value})}
-                                style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                                 required
                             />
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Classe:</label>
+                        <div className="form-group">
+                            <label className="form-label">Classe:</label>
                             <select
+                                className="form-control"
                                 value={currentMatiere.classeId}
                                 onChange={(e) => setCurrentMatiere({...currentMatiere, classeId: e.target.value})}
-                                style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                                 required
                             >
                                 <option value="">Sélectionnez une classe</option>
@@ -161,50 +176,69 @@ const MatierePage = () => {
                                 ))}
                             </select>
                         </div>
-                        <div>
-                            <button type="submit" style={{ marginRight: '10px' }}>
+                        <div className="form-actions">
+                            <button type="submit" className="btn btn-primary-custom">
+                                <i className={`fas ${editMode ? 'fa-save' : 'fa-plus'} me-2`}></i>
                                 {editMode ? 'Modifier' : 'Ajouter'}
                             </button>
-                            <button type="button" onClick={handleCancel}>Annuler</button>
+                            <button type="button" className="btn btn-secondary-custom" onClick={handleCancel}>
+                                <i className="fas fa-times me-2"></i>
+                                Annuler
+                            </button>
                         </div>
                     </form>
                 </div>
             )}
 
-            <table style={{ width: '100%', border: '1px solid black', borderCollapse: 'collapse' }}>
-                <thead>
-                <tr style={{ borderBottom: '1px solid black' }}>
-                    <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>ID</th>
-                    <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Nom du cours</th>
-                    <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Professeur</th>
-                    <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Type</th>
-                    <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Classe</th>
-                    <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {matieres.map((matiere) => (
-                    <tr key={matiere.id}>
-                        <td style={{ border: '1px solid black', padding: '10px' }}>{matiere.id}</td>
-                        <td style={{ border: '1px solid black', padding: '10px' }}>{matiere.nomCour}</td>
-                        <td style={{ border: '1px solid black', padding: '10px' }}>{matiere.nomProf}</td>
-                        <td style={{ border: '1px solid black', padding: '10px' }}>{matiere.typeCour}</td>
-                        <td style={{ border: '1px solid black', padding: '10px' }}>{getClasseNom(matiere.classeId)}</td>
-                        <td style={{ border: '1px solid black', padding: '10px' }}>
-                            <button onClick={() => handleEdit(matiere)} style={{ marginRight: '5px' }}>
-                                Modifier
-                            </button>
-                            <button onClick={() => handleDelete(matiere.id)}>
-                                Supprimer
-                            </button>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+            <div className="table-container">
+                <table className="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom du cours</th>
+                            <th>Professeur</th>
+                            <th>Type</th>
+                            <th>Classe</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {matieres.map((matiere) => (
+                            <tr key={matiere.id}>
+                                <td>{matiere.id}</td>
+                                <td>{matiere.nomCour}</td>
+                                <td>{matiere.nomProf}</td>
+                                <td>{matiere.typeCour}</td>
+                                <td>{getClasseNom(matiere.classeId)}</td>
+                                <td>
+                                    <div className="table-actions">
+                                        <button
+                                            className="btn btn-edit"
+                                            onClick={() => handleEdit(matiere)}
+                                        >
+                                            <i className="fas fa-edit me-1"></i>
+                                            Modifier
+                                        </button>
+                                        <button
+                                            className="btn btn-delete"
+                                            onClick={() => handleDelete(matiere.id)}
+                                        >
+                                            <i className="fas fa-trash me-1"></i>
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
             {matieres.length === 0 && (
-                <p style={{ marginTop: '20px' }}>Aucune matière trouvée.</p>
+                <div className="empty-message">
+                    <i className="fas fa-book fa-3x mb-3"></i>
+                    <p>Aucune matière trouvée.</p>
+                </div>
             )}
         </div>
     );

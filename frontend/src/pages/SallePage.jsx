@@ -1,6 +1,7 @@
 // src/pages/SallePage.jsx
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import '../styles/SallePage.css';
 
 const SallePage = () => {
     const [salles, setSalles] = useState([]);
@@ -71,47 +72,61 @@ const SallePage = () => {
     };
 
     if (loading) {
-        return <div>Chargement...</div>;
+        return (
+            <div className="salle-page-container">
+                <div className="loading-container">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <span className="loading-text">Chargement...</span>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div style={{ padding: '20px' }}>
-            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between' }}>
-                <h2>Gestion des Salles</h2>
-                <button onClick={handleAdd}>Ajouter une salle</button>
+        <div className="salle-page-container">
+            <div className="page-header d-flex justify-content-between align-items-center">
+                <h2 className="page-title">Gestion des Salles</h2>
+                <button className="btn btn-add-salle" onClick={handleAdd}>
+                    <i className="fas fa-plus me-2"></i>
+                    Ajouter une salle
+                </button>
             </div>
 
             {showForm && (
-                <div style={{ marginBottom: '20px', border: '1px solid black', padding: '20px' }}>
-                    <h3>{editMode ? 'Modifier la salle' : 'Ajouter une salle'}</h3>
+                <div className="form-container">
+                    <h3 className="form-title">
+                        {editMode ? 'Modifier la salle' : 'Ajouter une salle'}
+                    </h3>
                     <form onSubmit={handleSubmit}>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Nom:</label>
+                        <div className="form-group">
+                            <label className="form-label">Nom:</label>
                             <input
                                 type="text"
+                                className="form-control"
                                 value={currentSalle.nom}
                                 onChange={(e) => setCurrentSalle({...currentSalle, nom: e.target.value})}
-                                style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                                 required
                                 disabled={editMode}
                             />
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Bâtiment:</label>
+                        <div className="form-group">
+                            <label className="form-label">Bâtiment:</label>
                             <input
                                 type="text"
+                                className="form-control"
                                 value={currentSalle.batiment}
                                 onChange={(e) => setCurrentSalle({...currentSalle, batiment: e.target.value})}
-                                style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                                 required
                             />
                         </div>
-                        <div style={{ marginBottom: '10px' }}>
-                            <label>Type:</label>
+                        <div className="form-group">
+                            <label className="form-label">Type:</label>
                             <select
+                                className="form-control"
                                 value={currentSalle.type}
                                 onChange={(e) => setCurrentSalle({...currentSalle, type: e.target.value})}
-                                style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                                 required
                             >
                                 <option value="salle">Salle</option>
@@ -119,46 +134,65 @@ const SallePage = () => {
                                 <option value="atelier">Atelier</option>
                             </select>
                         </div>
-                        <div>
-                            <button type="submit" style={{ marginRight: '10px' }}>
+                        <div className="form-actions">
+                            <button type="submit" className="btn btn-primary-custom">
+                                <i className={`fas ${editMode ? 'fa-save' : 'fa-plus'} me-2`}></i>
                                 {editMode ? 'Modifier' : 'Ajouter'}
                             </button>
-                            <button type="button" onClick={handleCancel}>Annuler</button>
+                            <button type="button" className="btn btn-secondary-custom" onClick={handleCancel}>
+                                <i className="fas fa-times me-2"></i>
+                                Annuler
+                            </button>
                         </div>
                     </form>
                 </div>
             )}
 
-            <table style={{ width: '100%', border: '1px solid black', borderCollapse: 'collapse' }}>
-                <thead>
-                <tr style={{ borderBottom: '1px solid black' }}>
-                    <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Nom</th>
-                    <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Bâtiment</th>
-                    <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Type</th>
-                    <th style={{ border: '1px solid black', padding: '10px', textAlign: 'left' }}>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {salles.map((salle) => (
-                    <tr key={salle.nom}>
-                        <td style={{ border: '1px solid black', padding: '10px' }}>{salle.nom}</td>
-                        <td style={{ border: '1px solid black', padding: '10px' }}>{salle.batiment}</td>
-                        <td style={{ border: '1px solid black', padding: '10px' }}>{salle.type}</td>
-                        <td style={{ border: '1px solid black', padding: '10px' }}>
-                            <button onClick={() => handleEdit(salle)} style={{ marginRight: '5px' }}>
-                                Modifier
-                            </button>
-                            <button onClick={() => handleDelete(salle.nom)}>
-                                Supprimer
-                            </button>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+            <div className="table-container">
+                <table className="table table-custom">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Bâtiment</th>
+                            <th>Type</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {salles.map((salle) => (
+                            <tr key={salle.nom}>
+                                <td>{salle.nom}</td>
+                                <td>{salle.batiment}</td>
+                                <td>{salle.type}</td>
+                                <td>
+                                    <div className="table-actions">
+                                        <button
+                                            className="btn btn-edit"
+                                            onClick={() => handleEdit(salle)}
+                                        >
+                                            <i className="fas fa-edit me-1"></i>
+                                            Modifier
+                                        </button>
+                                        <button
+                                            className="btn btn-delete"
+                                            onClick={() => handleDelete(salle.nom)}
+                                        >
+                                            <i className="fas fa-trash me-1"></i>
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
             {salles.length === 0 && (
-                <p style={{ marginTop: '20px' }}>Aucune salle trouvée.</p>
+                <div className="empty-message">
+                    <i className="fas fa-door-open fa-3x mb-3"></i>
+                    <p>Aucune salle trouvée.</p>
+                </div>
             )}
         </div>
     );

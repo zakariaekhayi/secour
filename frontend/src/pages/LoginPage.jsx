@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { api } from '../services/api';
+import '../styles/LoginPage.css';
 
 const LoginPage = ({ onLogin }) => {
     const [username, setUsername] = useState('');
@@ -28,32 +29,32 @@ const LoginPage = ({ onLogin }) => {
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-            <div style={{ border: '1px solid black', padding: '20px', width: '300px' }}>
-                <h2>Connexion Admin</h2>
+        <div className="login-container">
+            <div className="login-box">
+                <h2 className="login-title">Connexion Admin</h2>
                 <form onSubmit={handleSubmit}>
-                    <div style={{ marginBottom: '10px' }}>
-                        <label>Nom d'utilisateur:</label>
+                    <div className="form-group">
+                        <label className="form-label">Nom d'utilisateur:</label>
                         <input
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            style={{ width: '100%', padding: '5px', marginTop: '5px' }}
+                            className="form-input"
                             required
                         />
                     </div>
-                    <div style={{ marginBottom: '10px' }}>
-                        <label>Mot de passe:</label>
+                    <div className="form-group">
+                        <label className="form-label">Mot de passe:</label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            style={{ width: '100%', padding: '5px', marginTop: '5px' }}
+                            className="form-input"
                             required
                         />
                     </div>
-                    {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
-                    <button type="submit" disabled={loading} style={{ width: '100%', padding: '10px' }}>
+                    {error && <div className="error-message">{error}</div>}
+                    <button type="submit" disabled={loading} className="login-button">
                         {loading ? 'Connexion...' : 'Se connecter'}
                     </button>
                 </form>

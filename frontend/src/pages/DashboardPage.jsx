@@ -1,4 +1,3 @@
-// src/pages/DashboardPage.jsx - Version simplifiée qui appelle directement les scripts PHP
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -7,6 +6,7 @@ import SallePage from './SallePage';
 import MatierePage from './MatierePage';
 import EmploisPage from './EmploisPage';
 import { api } from '../services/api';
+import '../styles/DashboardPage.css';
 
 const DashboardPage = ({ user, onLogout }) => {
     const [dashboardData, setDashboardData] = useState({});
@@ -115,186 +115,198 @@ const DashboardPage = ({ user, onLogout }) => {
                 return <EmploisPage />;
             default:
                 return (
-                    <div>
+                    <div className="stats-section">
                         <h3>📊 Statistiques</h3>
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                            gap: '20px',
-                            marginBottom: '30px'
-                        }}>
-                            <div style={{
-                                padding: '20px',
-                                backgroundColor: '#f8f9fa',
-                                borderRadius: '8px',
-                                border: '1px solid #e9ecef'
-                            }}>
-                                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#495057' }}>
-                                    {dashboardData.userCount || 0}
+                        <div className="row g-4 mb-4">
+                            <div className="col-lg-3 col-md-6">
+                                <div className="card stat-card users">
+                                    <div className="card-body">
+                                        <div className="stat-number">
+                                            {dashboardData.userCount || 0}
+                                        </div>
+                                        <p className="stat-label">Utilisateurs</p>
+                                    </div>
                                 </div>
-                                <div style={{ color: '#6c757d' }}>Utilisateurs</div>
                             </div>
 
-                            <div style={{
-                                padding: '20px',
-                                backgroundColor: '#e3f2fd',
-                                borderRadius: '8px',
-                                border: '1px solid #bbdefb'
-                            }}>
-                                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1976d2' }}>
-                                    {dashboardData.classeCount || 0}
+                            <div className="col-lg-3 col-md-6">
+                                <div className="card stat-card classes">
+                                    <div className="card-body">
+                                        <div className="stat-number">
+                                            {dashboardData.classeCount || 0}
+                                        </div>
+                                        <p className="stat-label">Classes</p>
+                                    </div>
                                 </div>
-                                <div style={{ color: '#1565c0' }}>Classes</div>
                             </div>
 
-                            <div style={{
-                                padding: '20px',
-                                backgroundColor: '#e8f5e8',
-                                borderRadius: '8px',
-                                border: '1px solid #c8e6c9'
-                            }}>
-                                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#388e3c' }}>
-                                    {dashboardData.salleCount || 0}
+                            <div className="col-lg-3 col-md-6">
+                                <div className="card stat-card salles">
+                                    <div className="card-body">
+                                        <div className="stat-number">
+                                            {dashboardData.salleCount || 0}
+                                        </div>
+                                        <p className="stat-label">Salles</p>
+                                    </div>
                                 </div>
-                                <div style={{ color: '#2e7d32' }}>Salles</div>
                             </div>
 
-                            <div style={{
-                                padding: '20px',
-                                backgroundColor: '#fff3e0',
-                                borderRadius: '8px',
-                                border: '1px solid #ffcc02'
-                            }}>
-                                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f57c00' }}>
-                                    {dashboardData.matiereCount || 0}
+                            <div className="col-lg-3 col-md-6">
+                                <div className="card stat-card matieres">
+                                    <div className="card-body">
+                                        <div className="stat-number">
+                                            {dashboardData.matiereCount || 0}
+                                        </div>
+                                        <p className="stat-label">Matières</p>
+                                    </div>
                                 </div>
-                                <div style={{ color: '#ef6c00' }}>Matières</div>
                             </div>
                         </div>
 
-                        <h3>🎓 Gestion des Emplois du Temps</h3>
-                        <div style={{
-                            display: 'flex',
-                            gap: '15px',
-                            marginBottom: '20px',
-                            flexWrap: 'wrap'
-                        }}>
-                            <button
-                                onClick={handleGenerateSchedules}
-                                disabled={planningLoading}
-                                style={{
-                                    padding: '15px 25px',
-                                    fontSize: '16px',
-                                    fontWeight: 'bold',
-                                    backgroundColor: planningLoading ? '#cccccc' : '#4CAF50',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    cursor: planningLoading ? 'not-allowed' : 'pointer',
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                                    transition: 'all 0.3s ease',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px'
-                                }}
-                            >
-                                {planningLoading ? (
-                                    <>
-                                        <div style={{
-                                            width: '16px',
-                                            height: '16px',
-                                            border: '2px solid #ffffff',
-                                            borderTop: '2px solid transparent',
-                                            borderRadius: '50%',
-                                            animation: 'spin 1s linear infinite'
-                                        }}></div>
-                                        Génération en cours...
-                                    </>
-                                ) : (
-                                    <>
-                                        📚 Générer les emplois du temps
-                                    </>
-                                )}
-                            </button>
+                        <div className="emplois-section">
+                            <h3>🎓 Gestion des Emplois du Temps</h3>
+                            <div className="action-buttons d-flex flex-wrap gap-3 mb-4">
+                                <button
+                                    onClick={handleGenerateSchedules}
+                                    disabled={planningLoading}
+                                    className="btn btn-generate d-flex align-items-center gap-2"
+                                >
+                                    {planningLoading ? (
+                                        <>
+                                            <div className="loading-spinner"></div>
+                                            Génération en cours...
+                                        </>
+                                    ) : (
+                                        <>
+                                            📚 Générer les emplois du temps
+                                        </>
+                                    )}
+                                </button>
 
-                            <button
-                                onClick={handleClearSchedules}
-                                disabled={planningLoading}
-                                style={{
-                                    padding: '15px 25px',
-                                    fontSize: '16px',
-                                    fontWeight: 'bold',
-                                    backgroundColor: planningLoading ? '#cccccc' : '#f44336',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    cursor: planningLoading ? 'not-allowed' : 'pointer',
-                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                                    transition: 'all 0.3s ease',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px'
-                                }}
-                            >
-                                {planningLoading ? (
-                                    <>
-                                        <div style={{
-                                            width: '16px',
-                                            height: '16px',
-                                            border: '2px solid #ffffff',
-                                            borderTop: '2px solid transparent',
-                                            borderRadius: '50%',
-                                            animation: 'spin 1s linear infinite'
-                                        }}></div>
-                                        Suppression en cours...
-                                    </>
-                                ) : (
-                                    <>
-                                        🗑️ Vider tous les emplois
-                                    </>
-                                )}
-                            </button>
+                                <button
+                                    onClick={handleClearSchedules}
+                                    disabled={planningLoading}
+                                    className="btn btn-clear d-flex align-items-center gap-2"
+                                >
+                                    {planningLoading ? (
+                                        <>
+                                            <div className="loading-spinner"></div>
+                                            Suppression en cours...
+                                        </>
+                                    ) : (
+                                        <>
+                                            🗑️ Vider tous les emplois
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+
+                            {/* Instructions d'utilisation */}
+                            <div className="card instructions-card">
+                                <div className="card-body">
+                                    <h4>📋 Instructions</h4>
+                                    <ul className="mb-0">
+                                        <li><strong>Générer les emplois :</strong> Exécute le script PHP pour créer automatiquement les plannings</li>
+                                        <li><strong>Vider les emplois :</strong> Exécute le script PHP pour supprimer tous les emplois existants</li>
+                                        <li><strong>Consultation :</strong> Utilisez l'onglet "Emplois" pour visualiser les plannings générés</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-
-                        {/* Instructions d'utilisation */}
-                        <div style={{
-                            padding: '20px',
-                            backgroundColor: '#e3f2fd',
-                            borderRadius: '8px',
-                            border: '1px solid #bbdefb',
-                            marginTop: '20px'
-                        }}>
-                            <h4 style={{ color: '#1976d2', marginTop: '0' }}>📋 Instructions</h4>
-                            <ul style={{ color: '#1565c0', lineHeight: '1.6' }}>
-                                <li><strong>Générer les emplois :</strong> Exécute le script PHP pour créer automatiquement les plannings</li>
-                                <li><strong>Vider les emplois :</strong> Exécute le script PHP pour supprimer tous les emplois existants</li>
-                                <li><strong>Consultation :</strong> Utilisez l'onglet "Emplois" pour visualiser les plannings générés</li>
-                            </ul>
-                        </div>
-
-                        {/* Style pour l'animation de rotation */}
-                        <style jsx>{`
-                            @keyframes spin {
-                                0% { transform: rotate(0deg); }
-                                100% { transform: rotate(360deg); }
-                            }
-                        `}</style>
                     </div>
                 );
         }
     };
 
     if (loading && currentPage === 'dashboard') {
-        return <div>Chargement...</div>;
+        return (
+            <div className="loading-container">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Chargement...</span>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div>
-            <Header user={user} onLogout={onLogout} />
-            <div style={{ display: 'flex' }}>
-                <Sidebar onMenuClick={handleMenuClick} />
-                <div style={{ flex: 1, padding: '20px' }}>
-                    {renderCurrentPage()}
+        <div className="dashboard-container">
+            {/* Header */}
+            <header className="dashboard-header">
+                <div className="d-flex justify-content-between align-items-center">
+                    <h2>Dashboard Admin</h2>
+                    <div className="user-info">
+                        <span className="username">
+                            Bienvenue, {user?.nomComplet || user?.username}
+                        </span>
+                        <button onClick={onLogout} className="btn logout-btn">
+                            Déconnexion
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div className="row g-0">
+                {/* Sidebar */}
+                <div className="col-md-3 col-lg-2">
+                    <div className="dashboard-sidebar">
+                        <h3 className="sidebar-title">Menu</h3>
+                        <nav className="sidebar-nav">
+                            <ul className="nav flex-column">
+                                <li className="nav-item">
+                                    <button
+                                        onClick={() => handleMenuClick('dashboard')}
+                                        className={`nav-link ${currentPage === 'dashboard' ? 'active' : ''}`}
+                                    >
+                                        <span className="me-2">📊</span>
+                                        Dashboard
+                                    </button>
+                                </li>
+                                <li className="nav-item">
+                                    <button
+                                        onClick={() => handleMenuClick('classes')}
+                                        className={`nav-link ${currentPage === 'classes' ? 'active' : ''}`}
+                                    >
+                                        <span className="me-2">🎓</span>
+                                        Classes
+                                    </button>
+                                </li>
+                                <li className="nav-item">
+                                    <button
+                                        onClick={() => handleMenuClick('matieres')}
+                                        className={`nav-link ${currentPage === 'matieres' ? 'active' : ''}`}
+                                    >
+                                        <span className="me-2">📚</span>
+                                        Matières
+                                    </button>
+                                </li>
+                                <li className="nav-item">
+                                    <button
+                                        onClick={() => handleMenuClick('salles')}
+                                        className={`nav-link ${currentPage === 'salles' ? 'active' : ''}`}
+                                    >
+                                        <span className="me-2">🏫</span>
+                                        Salles
+                                    </button>
+                                </li>
+                                <li className="nav-item">
+                                    <button
+                                        onClick={() => handleMenuClick('emplois')}
+                                        className={`nav-link ${currentPage === 'emplois' ? 'active' : ''}`}
+                                    >
+                                        <span className="me-2">📅</span>
+                                        Emplois
+                                    </button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+                {/* Main Content */}
+                <div className="col-md-9 col-lg-10">
+                    <main className="dashboard-main">
+                        {renderCurrentPage()}
+                    </main>
                 </div>
             </div>
         </div>
